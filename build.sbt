@@ -9,7 +9,16 @@ val circeVersion = "0.12.1"
 // Only necessary for SNAPSHOT releases
 resolvers += Resolver.sonatypeRepo("snapshots")
 
+scalacOptions ++= Seq(
+  "-feature",
+  "-deprecation",
+  "-unchecked",
+  "-language:postfixOps",
+  "-language:higherKinds")
+
 libraryDependencies ++= Seq(
+  "org.typelevel" %% "cats-core" % "2.0.0-RC1",
+  "org.typelevel" %% "cats-effect" % "2.0.0-RC1",
   "org.http4s" %% "http4s-dsl" % http4sVersion,
   "org.http4s" %% "http4s-blaze-server" % http4sVersion,
   "org.http4s" %% "http4s-blaze-client" % http4sVersion,
@@ -20,3 +29,5 @@ libraryDependencies ++= Seq(
   "joda-time" % "joda-time" % "2.10.4",
   "org.specs2" %% "specs2-core" % "4.7.1" % Test
 )
+
+addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3")
