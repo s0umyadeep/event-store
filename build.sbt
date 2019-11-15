@@ -5,6 +5,7 @@ version := "0.1"
 scalaVersion := "2.13.0"
 val http4sVersion = "0.21.0-SNAPSHOT"
 val circeVersion = "0.12.1"
+val doobieVersion = "0.8.6"
 
 // Only necessary for SNAPSHOT releases
 resolvers += Resolver.sonatypeRepo("snapshots")
@@ -27,6 +28,9 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-parser" % circeVersion,
   "org.scalactic" %% "scalactic" % "3.0.8",
   "joda-time" % "joda-time" % "2.10.4",
+  "org.tpolecat" %% "doobie-core" % doobieVersion,
+  "org.tpolecat" %% "doobie-postgres" % doobieVersion,
+  "org.tpolecat" %% "doobie-specs2" % doobieVersion % "test",
   "org.specs2" %% "specs2-core" % "4.7.1" % Test
 )
 
