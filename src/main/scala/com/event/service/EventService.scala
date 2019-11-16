@@ -1,25 +1,26 @@
 package com.event.service
 
 import cats.Monad
-import cats.effect.{IO, Sync}
+import cats.syntax.all._
 import com.event.model.Event
 import com.event.repositories.EventRepository
 
 trait EventService[F[_]] {
-  def findEvent(eventId: String): F[Option[Event]]
-
-  def currentEvents(): F[List[Event]]
+  def findEvent(eventId: String): F[Either[EventError, Option[Event]]]
 }
 
-class EventServiceImpl[F[_] : Sync : EventRepository] extends EventService[F] {
-  def findEvent(eventId: String): F[Option[Event]] =
-    EventRepository[F].findEvent(eventId)
+class EventServiceImpl[F[_] : Monad](eventRepository: EventRepository[F])
+  extends EventService[F] {
 
-  def currentEvents(): F[List[Event]] = {
-    Sync[F].map(EventRepository[F].fetchAllEvents())(x => x.filter(e => e.title.equals("t1")))
+  def findEvent(eventId: String): F[Either[EventError, Option[Event]]] = {
+    eventRepository.findEvent(eventId).flatMap {
+      case Some(event) => Monad[F].pure(Some(event).asRight)
+      case None => Monad[F].pure(EventError().asLeft)
+    }
   }
 }
 
 object EventService {
-  def apply[F[_]](implicit F: EventService[F]): EventService[F] = F
+  def apply[F[_] : Monad](eventRepository: EventRepository[F]): EventService[F] =
+    new EventServiceImpl(eventRepository)
 }

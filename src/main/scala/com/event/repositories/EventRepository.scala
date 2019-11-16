@@ -7,20 +7,18 @@ import doobie.implicits._
 
 trait EventRepository[F[_]] {
   def findEvent(eventId: String): F[Option[Event]]
-  def fetchAllEvents(): F[Vector[Event]]
 }
 
 class EventRepositoryImpl[F[_] : Bracket[*[_], Throwable]](val xa: Transactor[F])
   extends EventRepository[F] {
-  def findEvent(eventId: String): F[Option[Event]] =
-    sql"""SELECT * FROM event WHERE id=$eventId""".query[Event].option.transact(xa)
 
-  def fetchAllEvents(): F[Vector[Event]] =
-    sql"""SELECT * FROM event""".query[Event].to[Vector].transact(xa)
+  def findEvent(eventId: String): F[Option[Event]] =
+    sql"""SELECT id, title FROM event WHERE title ='$eventId'"""
+      .query[Event].option.transact(xa)
 }
 
 object EventRepository {
-  def apply[F[_] : Bracket[*[_], Throwable] : Transactor[F]]
+  def apply[F[_] : Bracket[*[_], Throwable]]
   (implicit xa: Transactor[F]): EventRepository[F] =
     new EventRepositoryImpl(xa)
 }
